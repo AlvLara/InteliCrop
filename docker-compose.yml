@@ -1,0 +1,76 @@
+services:
+  rabbitmq:
+    build: ./docker/rabbitmq
+    container_name: iot-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "1883:1883"     # MQTT
+      - "15672:15672"   # RabbitMQ Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: iot-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    container_name: iot-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+  ekuiper:
+    image: lfedge/ekuiper:latest
+    container_name: iot-ekuiper
+    hostname: ekuiper
+    depends_on:
+      - rabbitmq
+    ports:
+      - "9081:9081"     # eKuiper REST API
+    environment:
+      MQTT_SOURCE__DEFAULT__SERVER: "tcp://rabbitmq:1883"
+      MQTT_SOURCE__DEFAULT__USERNAME: ${RABBITMQ_USER}
+      MQTT_SOURCE__DEFAULT__PASSWORD: ${RABBITMQ_PASS}
+      MQTT_SOURCE__DEFAULT__QOS: "1"
+      KUIPER__BASIC__CONSOLELOG: "true"
+      KUIPER__BASIC__IGNORECASE: "false"
+    volumes:
+      - ekuiper_data:/kuiper/data
+      - ekuiper_log:/kuiper/log
+    restart: unless-stopped
+
+  ekuiper-manager:
+    image: emqx/ekuiper-manager:latest
+    container_name: iot-ekuiper-manager
+    depends_on:
+      - ekuiper
+    ports:
+      - "9082:9082"     # eKuiper Manager UI
+    environment:
+      DEFAULT_EKUIPER_ENDPOINT: "http://ekuiper:9081"
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  mongo_data:
+  mysql_data:
+  ekuiper_data:
+  ekuiper_log:
