@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Huerto Inteligente IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script>
+</head>
+
+<body class="dashboard">
+
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+            <span>Huerto Inteligente</span>
+        </div>
+    </nav>
+
+    <main>
+        <div class="empty-state">
+            <h1>Bienvenido a Huerto Inteligente</h1>
+            <p>Elige una opción para continuar</p>
+
+            <div class="auth-buttons">
+                <button class="btn-add-plant" id="loginBtn">
+                    Iniciar Sesión
+                </button>
+
+                <button class="btn-add-plant" id="registerBtn">
+                    Registrarse
+                </button>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

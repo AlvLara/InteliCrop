@@ -1,0 +1,108 @@
+services:
+  rabbitmq:
+    build: ./docker/rabbitmq
+    container_name: iot-rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: iot-mongodb
+    hostname: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongodb/init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    container_name: iot-mysql
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  wso2-si:
+    build:
+      context: .
+      dockerfile: ./docker/wso2-si/Dockerfile
+    image: iot-wso2-si:4.4.0
+    container_name: iot-wso2-si
+    hostname: wso2-si
+    depends_on:
+      - rabbitmq
+      - mysql
+    ports:
+      - "9443:9443"
+      - "9090:9090"
+      - "7070:7070"
+      - "7443:7443"
+    environment:
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./docker/wso2-si/siddhi-files:/home/wso2carbon/wso2si-4.4.0/wso2/server/deployment/siddhi-files:ro
+    restart: unless-stopped
+
+  wso2-si-tooling:
+    build:
+      context: .
+      dockerfile: ./docker/wso2-si-tooling/Dockerfile
+    image: iot-wso2-si-tooling:4.3.0
+    container_name: iot-wso2-si-tooling
+    hostname: wso2-si-tooling
+    depends_on:
+      - wso2-si
+      - rabbitmq
+      - mysql
+    ports:
+      - "9390:9390"
+    volumes:
+      - ./docker/wso2-si/siddhi-files:/opt/wso2si-tooling-4.3.0/wso2/editor/deployment/workspace:rw
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: iot-redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./docker/redis/users.acl:/usr/local/etc/redis/users.acl:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  mongo_data:
+  mysql_data:
+  redis_data:

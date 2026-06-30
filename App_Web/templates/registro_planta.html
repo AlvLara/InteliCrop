@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Planta - Huerto Inteligente IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+<div class="register-card">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo Huerto Inteligente">
+    </div>
+
+    <h2>Registrar Nueva Planta</h2>
+
+    {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form action="/registro_planta" method="POST">
+             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-group">
+            <label for="nombre">Nombre de la Planta</label>
+            <input 
+                type="text" 
+                id="nombre" 
+                name="nombre"
+                placeholder="Ej. Tomatera del patio" 
+                value="{{ nombre or '' }}"
+                required 
+                autocomplete="off"
+            >
+
+            <label for="secreto_cifrado">Secreto compartido</label>
+            <input 
+                type="password" 
+                id="secreto_cifrado" 
+                name="secreto_cifrado" 
+                placeholder="12123434njt" 
+                required 
+                autocomplete="off"
+            >
+        </div>
+
+        <button type="submit" class="btn-submit">
+            Registrar Planta
+        </button>
+
+    </form>
+
+    <p class="footer-text">
+        <a href="/plantas">Volver a mis plantas</a>
+    </p>
+</div>
+
+</body>
+</html>

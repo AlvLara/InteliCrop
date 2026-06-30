@@ -1,0 +1,216 @@
+/* =====================================================
+   ESTILOS PARA LA VISTA DE HISTÓRICO - PREMIUM GREEN
+   ===================================================== */
+
+.historico-container {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+/* Cabecera del histórico */
+.cultivo-header {
+    margin-bottom: 32px;
+}
+
+.cultivo-header .subtitle {
+    color: #4b5563;
+    font-size: 16px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+}
+
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.btn-outline-small {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #10b981;
+    background-color: transparent;
+    border: 2px solid #10b981;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.22s ease;
+}
+
+.btn-outline-small:hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.18);
+    transform: translateY(-2px);
+}
+
+/* Botón alternador de vistas */
+#btn-cambiar-vista {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 12px 22px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    display: inline-block;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+}
+
+#btn-cambiar-vista:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(16, 185, 129, 0.22);
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+/* Contenedor de la tabla */
+.table-container-historico {
+    background-color: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d1fae5;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(6, 95, 70, 0.06);
+    margin-top: 20px;
+}
+
+.tabla-historico {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-historico th {
+    background-color: #ecfdf5;
+    color: #047857;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    padding: 18px 22px;
+    text-align: left;
+    border-bottom: 1px solid #d1fae5;
+}
+
+.tabla-historico td {
+    padding: 18px 22px;
+    text-align: left;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #f0fdf4;
+    vertical-align: middle;
+}
+
+.tabla-historico tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-historico tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.tabla-historico tbody tr:hover {
+    background-color: #f9fffb;
+}
+
+.date-cell {
+    font-family: monospace;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+/* Badges de clima */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.status-badge.sunny {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+.status-badge.raining {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+/* Vista de la gráfica */
+#vista-grafica {
+    display: none;
+    background-color: rgba(255, 255, 255, 0.92);
+    padding: 28px;
+    border-radius: 24px;
+    border: 1px solid #d1fae5;
+    box-shadow: 0 20px 40px rgba(6, 95, 70, 0.06);
+}
+
+#graficoHistorico {
+    max-height: 440px;
+    width: 100%;
+}
+
+/* Estado vacío */
+.empty-state-historico {
+    text-align: center;
+    padding: 60px 40px;
+    background-color: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d1fae5;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(6, 95, 70, 0.06);
+    margin-top: 20px;
+}
+
+.empty-icon {
+    font-size: 54px;
+    margin-bottom: 16px;
+}
+
+.empty-state-historico h3 {
+    color: #064e3b;
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.empty-state-historico p {
+    color: #6b7280;
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .table-container-historico {
+        overflow-x: auto;
+    }
+    
+    .tabla-historico {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 680px) {
+    .user-controls {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-outline-small {
+        width: 100%;
+        text-align: center;
+    }
+
+    .cultivo-header h1 {
+        font-size: 28px;
+    }
+    #btn-cambiar-vista {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis plantas - Huerto Inteligente IoT</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/plantas.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <nav class="dashboard-navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+            <div>
+                <h2>Huerto Inteligente</h2>
+                <span>Mis cultivos</span>
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <div class="user-pill">
+                <span class="user-avatar">
+                    {{ nombre_usuario[0]|upper }}
+                </span>
+                <span>{{ nombre_usuario }}</span>
+            </div>
+
+            <form action="{{ url_for('logout') }}" method="POST" class="logout-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-logout">
+                    Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+
+        <section class="hero-card plantas-hero">
+            <div class="hero-text">
+                <span class="hero-label">Gestión de cultivos</span>
+                <h1>Mis plantas</h1>
+                <p>Consulta los cultivos asociados a tu cuenta.</p>
+            </div>
+
+            <div class="hero-status">
+                <span class="status-dot"></span>
+                Panel activo
+            </div>
+        </section>
+
+        <section class="plants-section">
+
+            <div class="plants-header">
+                <div>
+                    <h2>Listado de plantas</h2>
+                    <p>Estos son los cultivos registrados en tu huerto inteligente.</p>
+                </div>
+
+                <button 
+                    type="button" 
+                    class="btn-add-cultivo js-ir-registro-planta"
+                    data-url="{{ url_for('registro_planta') }}"
+                >
+                    Añadir cultivo
+                </button>
+            </div>
+
+            {% if lista_plantas and lista_plantas|length > 0 %}
+
+            <div class="table-container">
+                <table class="plants-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Fecha de creación</th>
+                            <th>UUID cultivo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for planta in lista_plantas %}
+                        <tr>
+                            <td>
+                                <strong>{{ planta.nombre }}</strong>
+                            </td>
+
+                            <td>
+                                <span class="plant-status">
+                                    {{ planta.estado_del_cultivo }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ planta.fecha_creacion }}
+                            </td>
+
+                            <td class="uuid-cell">
+                                {{ planta.uuid_cultivo }}
+                            </td>
+
+                            <td>
+                                <button 
+                                    type="button"
+                                    class="btn-table js-ver-cultivo"
+                                    data-url="{{ url_for('cultivo', uuid_cultivo=planta.uuid_cultivo) }}"
+                                >
+                                    Ver
+                                </button>
+
+                                <form 
+                                    action="{{ url_for('eliminar_planta', uuid_cultivo=planta.uuid_cultivo) }}"
+                                    data-nombre_planta="{{ planta.nombre }}"
+                                    method="POST"
+                                    class="delete-plant-form"
+                                >
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn-table btn-danger">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% else %}
+
+            <div class="no-plants-card">
+                <div class="no-plants-icon">🌱</div>
+                <h2>No tienes plantas registradas</h2>
+                <p>
+                    Todavía no hay ningún cultivo asociado a tu cuenta.
+                    Añade tu primera planta para empezar a controlar tu huerto inteligente.
+                </p>
+
+                <button 
+                    type="button" 
+                    class="btn-add-cultivo js-ir-registro-planta"
+                    data-url="{{ url_for('registro_planta') }}"
+                >
+                    Añadir mi primera planta
+                </button>
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/plantas.js') }}" defer></script>
+</body>
+
+</html>

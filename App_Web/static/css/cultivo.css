@@ -1,0 +1,762 @@
+/* =========================================
+   PÁGINA DE DETALLE DEL CULTIVO
+   ========================================= */
+
+body.dashboard {
+    background-color: #f0fdf4;
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* =========================================
+   BARRA SUPERIOR (NAVBAR)
+   ========================================= */
+.navbar {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 40px;
+    box-shadow: 0 4px 15px rgba(6, 95, 70, 0.05);
+    border-bottom: 1px solid #d1fae5;
+}
+
+.navbar-space-between {
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.navbar-brand img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-brand span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #064e3b;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.welcome-text {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+.welcome-text strong {
+    color: #047857;
+}
+
+/* BOTÓN VOLVER */
+.btn-outline-small {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #10b981;
+    background-color: transparent;
+    border: 2px solid #10b981;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.22s ease;
+}
+
+.btn-outline-small:hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.18);
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   CONTENEDOR PRINCIPAL
+   ========================================= */
+.cultivo-details-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* CABECERA DEL CULTIVO (Estilo Tarjeta Éxito) */
+.cultivo-header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 255, 251, 0.95));
+    border: 1px solid #d1fae5;
+    border-radius: 30px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 24px 50px rgba(6, 95, 70, 0.08);
+    margin-bottom: 40px;
+}
+
+.cultivo-header h1 {
+    color: #064e3b;
+    font-size: 32px;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.cultivo-subtitle {
+    color: #6b7280;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   PANEL DE MONITOREO Y SENSORES
+   ========================================= */
+.monitoring-panel h2 {
+    color: #047857;
+    font-size: 22px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.sensor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.sensor-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 25px rgba(6, 95, 70, 0.04);
+    transition: all 0.3s ease;
+}
+
+.sensor-card:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(16, 185, 129, 0.12);
+}
+
+/* ICONOS DE SENSORES (Estilo Success Icon) */
+.sensor-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #ecfdf5;
+    color: #10b981;
+    border: 1px solid #bbf7d0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.1);
+    flex-shrink: 0;
+}
+
+.sensor-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sensor-info h3 {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #047857;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sensor-value {
+    color: #064e3b;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 640px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+
+    .navbar-space-between {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .user-controls {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .welcome-text {
+        display: none;
+    }
+
+    .btn-outline-small {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .cultivo-details-container {
+        margin: 20px auto;
+    }
+
+    .cultivo-header {
+        padding: 30px 20px;
+        border-radius: 24px;
+    }
+
+    .cultivo-header h1 {
+        font-size: 26px;
+    }
+
+    .sensor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sensor-card {
+        padding: 20px;
+    }
+}
+
+.actualizacion-container {
+    text-align: center;
+    margin-top: 25px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+#ts {
+    color: #047857;
+}
+
+/* --- SUBHEADER Y BOTONES DE ACCIÓN --- */
+
+.cultivo-subheader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.badge-status {
+    color: #10b981; /* Verde moderno */
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.subheader-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Base de los botones */
+.btn-subheader {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none; /* Por si es un enlace <a> */
+}
+
+/* Botón Histórico (Gris/Plata elegante) */
+.btn-subheader.btn-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.btn-subheader.btn-secondary:hover {
+    background-color: #e5e7eb;
+    transform: translateY(-1px);
+}
+
+/* Botón Bomba (Azul Agua de acción) */
+.btn-subheader.btn-primary {
+    background-color: #2563eb;
+    color: white;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+}
+
+.btn-subheader.btn-primary:hover {
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Botón Alertas */
+.btn-subheader.btn-thirdary {
+    background-color: #ef4444;
+    color: white;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.btn-subheader.btn-thirdary:hover {
+    background-color: #dc2626;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Animación simple cuando se hace clic */
+.btn-subheader:active {
+    transform: translateY(1px);
+}
+
+
+@media (max-width: 600px) {
+    .cultivo-subheader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .subheader-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    .btn-subheader {
+        width: 100%;
+    }
+}
+
+
+@property --sensor-progress {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.sensor-icon {
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+}
+
+.sensor-icon::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #10b981 0deg,
+        #10b981 var(--sensor-progress),
+        #d1fae5 var(--sensor-progress),
+        #d1fae5 360deg
+    );
+    z-index: -1;
+
+    -webkit-mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 6px),
+        #000 calc(100% - 5px)
+    );
+
+    mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 6px),
+        #000 calc(100% - 5px)
+    );
+}
+
+.sensor-icon.sensor-loading::before {
+    animation: cargarSensor 10s linear forwards;
+}
+
+@keyframes cargarSensor {
+    from {
+        --sensor-progress: 0deg;
+    }
+
+    to {
+        --sensor-progress: 360deg;
+    }
+}
+
+
+/* =========================================
+   GEMELO DIGITAL DEL CULTIVO
+   ========================================= */
+
+.digital-twin-panel {
+    margin-top: 40px;
+}
+
+.digital-twin-panel h2 {
+    color: #047857;
+    font-size: 22px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.digital-twin {
+    background: #ffffff;
+    border: 1px solid #d1fae5;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 24px 50px rgba(6, 95, 70, 0.08);
+}
+
+.twin-sky {
+    position: relative;
+    height: 180px;
+    background: linear-gradient(180deg, #bfdbfe, #ecfdf5);
+    overflow: hidden;
+    transition: background 0.4s ease;
+}
+
+.twin-sun {
+    position: absolute;
+    top: 28px;
+    right: 50px;
+    width: 58px;
+    height: 58px;
+    background: #facc15;
+    border-radius: 50%;
+    box-shadow: 0 0 35px rgba(250, 204, 21, 0.6);
+    transition: all 0.4s ease;
+}
+
+.twin-cloud {
+    position: absolute;
+    top: 55px;
+    left: 55px;
+    width: 95px;
+    height: 34px;
+    background: #ffffff;
+    border-radius: 999px;
+    box-shadow: 35px 5px 0 #ffffff, 18px -18px 0 #ffffff;
+    opacity: 0.8;
+    transition: all 0.4s ease;
+}
+
+.twin-rain {
+    display: none;
+    position: absolute;
+    top: 80px;
+    left: 80px;
+    width: 130px;
+    height: 90px;
+}
+
+.twin-rain span {
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 28px;
+    background: #3b82f6;
+    border-radius: 999px;
+    animation: rainDrop 0.8s linear infinite;
+}
+
+.twin-rain span:nth-child(1) {
+    left: 5px;
+    animation-delay: 0s;
+}
+
+.twin-rain span:nth-child(2) {
+    left: 30px;
+    animation-delay: 0.15s;
+}
+
+.twin-rain span:nth-child(3) {
+    left: 60px;
+    animation-delay: 0.3s;
+}
+
+.twin-rain span:nth-child(4) {
+    left: 90px;
+    animation-delay: 0.45s;
+}
+
+.twin-rain span:nth-child(5) {
+    left: 120px;
+    animation-delay: 0.6s;
+}
+
+@keyframes rainDrop {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(70px);
+        opacity: 0;
+    }
+}
+
+.twin-ground {
+    position: relative;
+    height: 260px;
+    background: linear-gradient(180deg, #ecfdf5, #bbf7d0);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 35px;
+}
+
+.twin-pot {
+    position: relative;
+    width: 170px;
+    height: 115px;
+}
+
+.twin-soil {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    width: 140px;
+    height: 26px;
+    background: #78350f;
+    border-radius: 50%;
+    z-index: 3;
+    transition: background 0.4s ease;
+}
+
+.pot-body {
+    position: absolute;
+    top: 12px;
+    left: 25px;
+    width: 120px;
+    height: 95px;
+    background: linear-gradient(180deg, #fb923c, #c2410c);
+    clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+    border-radius: 0 0 18px 18px;
+    z-index: 2;
+}
+
+.twin-plant {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    width: 150px;
+    height: 145px;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+    transition: all 0.4s ease;
+    z-index: 4;
+}
+
+.plant-stem {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 10px;
+    height: 125px;
+    background: #15803d;
+    border-radius: 999px;
+    transform: translateX(-50%);
+    transition: background 0.4s ease;
+}
+
+.leaf {
+    position: absolute;
+    width: 58px;
+    height: 34px;
+    background: #22c55e;
+    border-radius: 60px 0 60px 0;
+    transition: all 0.4s ease;
+}
+
+.leaf-left {
+    left: 18px;
+    transform: rotate(-28deg);
+}
+
+.leaf-right {
+    right: 18px;
+    transform: rotate(28deg) scaleX(-1);
+}
+
+.leaf-top {
+    top: 20px;
+}
+
+.leaf-middle {
+    top: 70px;
+}
+
+.twin-info {
+    padding: 22px;
+    text-align: center;
+    background: #ffffff;
+    border-top: 1px solid #d1fae5;
+}
+
+.twin-info p {
+    margin: 0 0 14px;
+    color: #064e3b;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.twin-badges {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.twin-badges span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #bbf7d0;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Estados del gemelo */
+
+.digital-twin.twin-raining .twin-rain {
+    display: block;
+}
+
+.digital-twin.twin-raining .twin-sky {
+    background: linear-gradient(180deg, #94a3b8, #dbeafe);
+}
+
+.digital-twin.twin-raining .twin-sun {
+    opacity: 0.25;
+}
+
+.digital-twin.twin-raining .twin-cloud {
+    background: #e5e7eb;
+    box-shadow: 35px 5px 0 #e5e7eb, 18px -18px 0 #e5e7eb;
+    opacity: 1;
+}
+
+.digital-twin.twin-hot .twin-sky {
+    background: linear-gradient(180deg, #fed7aa, #fef3c7);
+}
+
+.digital-twin.twin-hot .twin-sun {
+    background: #f97316;
+    box-shadow: 0 0 45px rgba(249, 115, 22, 0.75);
+    transform: scale(1.12);
+}
+
+.digital-twin.twin-cold .twin-sky {
+    background: linear-gradient(180deg, #dbeafe, #f8fafc);
+}
+
+.digital-twin.twin-cold .twin-sun {
+    background: #fde68a;
+    opacity: 0.55;
+}
+
+.digital-twin.twin-dry .leaf {
+    background: #ca8a04;
+    transform-origin: bottom center;
+}
+
+.digital-twin.twin-dry .leaf-left {
+    transform: rotate(10deg);
+}
+
+.digital-twin.twin-dry .leaf-right {
+    transform: rotate(-10deg) scaleX(-1);
+}
+
+.digital-twin.twin-dry .plant-stem {
+    background: #65a30d;
+}
+
+.digital-twin.twin-dry .twin-soil {
+    background: #92400e;
+}
+
+.digital-twin.twin-wet .leaf {
+    background: #16a34a;
+}
+
+.digital-twin.twin-wet .twin-soil {
+    background: #1e3a8a;
+}
+
+.digital-twin.twin-ok .leaf {
+    background: #22c55e;
+}
+
+.digital-twin.twin-ok .plant-stem {
+    background: #15803d;
+}
+
+.digital-twin.twin-ok .twin-soil {
+    background: #78350f;
+}
+
+.digital-twin.twin-ok .twin-plant {
+    animation: plantAlive 2.5s ease-in-out infinite;
+}
+
+@keyframes plantAlive {
+    0%, 100% {
+        transform: translateX(-50%) rotate(0deg);
+    }
+
+    50% {
+        transform: translateX(-50%) rotate(1.5deg);
+    }
+}
+
+@media (max-width: 640px) {
+    .twin-sky {
+        height: 150px;
+    }
+
+    .twin-ground {
+        height: 230px;
+    }
+
+    .twin-badges {
+        flex-direction: column;
+    }
+
+    .twin-badges span {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+
+.form-bomba {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+}

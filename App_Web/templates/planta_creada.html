@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planta creada - Huerto Inteligente IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/planta_creada.css') }}">
+</head>
+<body>
+
+<div class="created-card">
+    <div class="logo-container">
+        <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo Huerto Inteligente">
+    </div>
+
+    <h2>Planta creada correctamente</h2>
+
+    <p class="created-subtitle">
+        La planta <strong>{{ nombre_planta }}</strong> se ha registrado correctamente.
+    </p>
+
+    <div class="warning-box">
+        <strong>Importante:</strong>
+        Guarda esta API key ahora. Por seguridad, no se volverá a mostrar.
+    </div>
+
+    <div class="api-section">
+        <label>API key para el ESP32</label>
+        <div class="api-box">
+            <code id="apiKey">{{ api_key }}</code>
+        </div>
+    </div>
+
+    <div class="secreto-section">
+        <label>Secreto para el ESP32</label>
+        <div class="secreto-box">
+            <code id="secreto_sin_cifrado">{{ secreto_sin_cifrado }}</code>
+        </div>
+    </div>
+
+    <div class="api-section">
+        <label>Línea para tu archivo <code>secrets.h</code></label>
+        <div class="api-box code-box">
+            <code id="apiDefine">#define API_KEY_SECRET "{{ api_key }}"</code>
+            <br>
+            <code id="secretDefine">#define HMAC_SECRET_KEY "{{ secreto_sin_cifrado }}"</code>
+        </div>
+    </div>
+
+    <p id="copyMessage" class="copy-message"></p>
+
+    <a href="{{ url_for('plantas') }}" class="btn-primary-link">
+        Volver a mis plantas
+    </a>
+</div>
+
+</body>
+</html>

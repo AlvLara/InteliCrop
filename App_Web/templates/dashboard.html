@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Huerto Inteligente IoT</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-page">
+
+    <nav class="dashboard-navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+            <div>
+                <h2>Huerto Inteligente</h2>
+                <span>Panel de control IoT</span>
+            </div>
+        </div>
+
+        <div class="navbar-right">
+            <div class="user-pill">
+                <span class="user-avatar">
+                    {{ nombre_usuario[0]|upper }}
+                </span>
+                <span>{{ nombre_usuario }}</span>
+            </div>
+
+            <form action="{{ url_for('logout') }}" method="POST" class="logout-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-logout">
+                    Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+
+        <section class="hero-card">
+            <div class="hero-text">
+                <span class="hero-label">Bienvenido de nuevo</span>
+                <h1>Hola, {{ nombre_usuario }}</h1>
+                <p>
+                    Supervisa tus plantas, sensores y sistema de riego desde un único panel.
+                </p>
+            </div>
+
+            <div class="hero-status">
+                <span class="status-dot"></span>
+                Sistema activo
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-icon">🌱</div>
+                <div>
+                    <span>Plantas registradas</span>
+                    <strong id="plantas-registradas">--</strong>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon">💧</div>
+                <div>
+                    <span>Humedad media</span>
+                    <strong id="humedad-media">--%</strong>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon">🌡️</div>
+                <div>
+                    <span>Temperatura</span>
+                    <strong id="temperatura-media">--°C</strong>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon">🚿</div>
+                <div>
+                    <span>Estado del riego</span>
+                    <strong id="estado-riego">Inactivo</strong>
+                </div>
+            </article>
+        </section>
+
+        <section class="actions-grid">
+            <article class="action-card featured">
+                <div>
+                    <span class="card-label">Gestión</span>
+                    <h2>Mis plantas</h2>
+                    <p>Consulta, añade y administra las plantas de tu huerto inteligente.</p>
+                </div>
+
+                <button 
+                    type="button" 
+                    class="btn-ver-plantas" 
+                    data-url="{{ url_for('plantas') }}"
+                >
+                    Ver plantas
+                </button>
+            </article>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+</body>
+</html>

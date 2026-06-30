@@ -1,0 +1,319 @@
+@App:name("CultivoRabbitMQToMySQL")
+
+@App:description("Evalúa reglas de sensores desde RabbitMQ AMQP y guarda alertas solo si el cultivo existe.")
+
+
+@source(
+    type='rabbitmq',
+    uri='amqp://ekuiper_user:oT192e6%2F%25%3FB@rabbitmq:5672',
+    exchange.name='sensores.exchange_proteccion',
+    exchange.type='topic',
+    exchange.durable.enabled='true',
+    routing.key='sensores.validado',
+    queue.name='cola_ekuiper_raw',
+    queue.durable.enabled='true',
+    auto.ack='true',
+    @map(
+        type='json',
+        fail.on.missing.attribute='false',
+        @attributes(
+            uuid_cultivo='uuid_cultivo',
+            temperatura='payload.temperatura',
+            humedad='payload.humedad',
+            lluvia='payload.lluvia',
+            humedad_suelo='payload.humedad_suelo',
+            esta_lloviendo='payload.esta_lloviendo',
+            ts='payload.ts',
+            time_envio='payload.time_envio',
+            hmac='hmac'
+        )
+    )
+)
+define stream CultivoSensorStream (
+    uuid_cultivo string,
+    temperatura double,
+    humedad int,
+    lluvia int,
+    humedad_suelo int,
+    esta_lloviendo bool,
+    ts long,
+    time_envio string,
+    hmac string
+);
+
+
+define stream CultivoSensorValidoStream (
+    uuid_cultivo string,
+    temperatura double,
+    humedad int,
+    lluvia int,
+    humedad_suelo int,
+    esta_lloviendo bool,
+    ts long,
+    time_envio string,
+    hmac string
+);
+
+
+@Store(
+    type="rdbms",
+    jdbc.url="jdbc:mysql://mysql:3306/huerto_iot?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+    username="root",
+    password="Z3mQ8rT1vL6yK9pD2xC5wN7sF0hB4aGu",
+    jdbc.driver.name="com.mysql.cj.jdbc.Driver",
+    table.name="cultivo"
+)
+@PrimaryKey("uuid_cultivo")
+define table CultivoTable (
+    uuid_cultivo string
+);
+
+
+@Store(
+    type="rdbms",
+    jdbc.url="jdbc:mysql://mysql:3306/huerto_iot?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+    username="root",
+    password="Z3mQ8rT1vL6yK9pD2xC5wN7sF0hB4aGu",
+    jdbc.driver.name="com.mysql.cj.jdbc.Driver",
+    table.name="alertas"
+)
+define table AlertasTable (
+    uuid_cultivo string,
+    tipo_alerta string,
+    mensaje string,
+    leida int,
+    agua int,
+    momento_alerta string
+);
+
+
+@Store(
+    type="rdbms",
+    jdbc.url="jdbc:mysql://mysql:3306/huerto_iot?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
+    username="root",
+    password="Z3mQ8rT1vL6yK9pD2xC5wN7sF0hB4aGu",
+    jdbc.driver.name="com.mysql.cj.jdbc.Driver",
+    table.name="conf_umbrales"
+)
+@PrimaryKey("uuid_conf")
+@Index("uuid_cultivo", "tipo_sensor")
+define table ConfUmbralesTable (
+    uuid_conf string,
+    uuid_cultivo string,
+    tipo_sensor string,
+    min_valor double,
+    max_valor double
+);
+
+
+@info(name='filtrar_cultivo_existente')
+from CultivoSensorStream as s join CultivoTable as cultivo
+    on s.uuid_cultivo == cultivo.uuid_cultivo
+select
+    s.uuid_cultivo as uuid_cultivo,
+    s.temperatura as temperatura,
+    s.humedad as humedad,
+    s.lluvia as lluvia,
+    s.humedad_suelo as humedad_suelo,
+    s.esta_lloviendo as esta_lloviendo,
+    s.ts as ts,
+    s.time_envio as time_envio,
+    s.hmac as hmac
+insert into CultivoSensorValidoStream;
+
+
+@info(name='insert_alerta_por_humedad_suelo_baja')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad_suelo'
+    and s.humedad_suelo < c.min_valor
+    and s.esta_lloviendo == false
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'HUMEDAD_SUELO_BAJA' as tipo_alerta,
+    'Humedad del suelo por debajo del umbral minimo. Se recomienda activar el riego.' as mensaje,
+    0 as leida,
+    1 as agua,
+    s.time_envio as momento_alerta
+insert into AlertasTable;
+@info(name='insert_alerta_por_humedad_suelo_alta')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad_suelo'
+    and s.humedad_suelo > c.max_valor
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'HUMEDAD_SUELO_ALTA' as tipo_alerta,
+    'Posible exceso de riego o encharcamiento.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+
+@info(name='insert_alerta_temperatura_alta')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'temperatura'
+    and s.temperatura > c.max_valor
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'TEMPERATURA_ALTA' as tipo_alerta,
+    'La temperatura supera el umbral configurado.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_temperatura_baja')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'temperatura'
+    and s.temperatura < c.min_valor
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'TEMPERATURA_BAJA' as tipo_alerta,
+    'La temperatura supera el umbral configurado.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_humedad_alta')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad'
+    and s.humedad > c.max_valor
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'HUMEDAD_ALTA' as tipo_alerta,
+    'La humedad ambiente supera el umbral configurado.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_humedad_baja')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad'
+    and s.humedad < c.max_valor
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'HUMEDAD_BAJA' as tipo_alerta,
+    'La humedad ambiente supera el umbral configurado.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_riego_urgente')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad_suelo'
+    and s.humedad_suelo < c.min_valor
+    and s.temperatura > 30
+    and s.esta_lloviendo == false
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'RIEGO_URGENTE' as tipo_alerta,
+    'Temperatura elevada y suelo seco. Se recomienda regar inmediatamente.' as mensaje,
+    0 as leida,
+    1 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_riego_bloqueado_por_lluvia')
+from CultivoSensorValidoStream as s join ConfUmbralesTable as c
+    on s.uuid_cultivo == c.uuid_cultivo
+    and c.tipo_sensor == 'humedad_suelo'
+    and s.humedad_suelo < c.min_valor
+    and s.esta_lloviendo == true
+
+select
+    s.uuid_cultivo as uuid_cultivo,
+    'RIEGO_BLOQUEADO_LLUVIA' as tipo_alerta,
+    'El suelo esta seco pero esta lloviendo.' as mensaje,
+    0 as leida,
+    0 as agua,
+    s.time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_riesgo_hongos')
+from CultivoSensorValidoStream[
+    humedad > 85
+    and temperatura > 22
+    and humedad_suelo > 80
+]
+
+select
+    uuid_cultivo,
+    'RIESGO_HONGOS' as tipo_alerta,
+    'Condiciones favorables para el desarrollo de hongos.' as mensaje,
+    0 as leida,
+    0 as agua,
+    time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_estres_hidrico')
+from CultivoSensorValidoStream[
+    temperatura > 35
+    and humedad < 30
+]
+
+select
+    uuid_cultivo,
+    'ESTRES_HIDRICO' as tipo_alerta,
+    'Temperatura alta y humedad ambiente baja.' as mensaje,
+    0 as leida,
+    1 as agua,
+    time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_inconsistencia_lluvia')
+from CultivoSensorValidoStream[
+    esta_lloviendo == true
+    and lluvia == 0
+]
+
+select
+    uuid_cultivo,
+    'INCONSISTENCIA_LLUVIA' as tipo_alerta,
+    'El sensor indica lluvia pero la precipitacion es cero.' as mensaje,
+    0 as leida,
+    0 as agua,
+    time_envio as momento_alerta
+
+insert into AlertasTable;
+
+@info(name='insert_alerta_posible_fallo_sensor')
+from CultivoSensorValidoStream[
+    esta_lloviendo == true
+    and lluvia > 80
+    and humedad_suelo < 20
+]
+
+select
+    uuid_cultivo,
+    'POSIBLE_FALLO_SENSOR' as tipo_alerta,
+    'La lluvia detectada no coincide con la humedad del suelo.' as mensaje,
+    0 as leida,
+    0 as agua,
+    time_envio as momento_alerta
+
+insert into AlertasTable;

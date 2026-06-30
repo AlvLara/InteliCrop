@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas - {{ cultivo.nombre }}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/historico.css') }}">
+</head>
+<body class="dashboard-page">
+
+    <nav class="dashboard-navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+            <div>
+                <h2>Huerto Inteligente</h2>
+                <span>Registro de alertas</span>
+            </div>
+        </div>
+        <div class="user-controls">
+            <a href="{{ url_for('cultivo', uuid_cultivo=cultivo.uuid_cultivo) }}" class="btn-outline-small">⬅ Volver al Panel</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container historico-container">
+        <header class="cultivo-header">
+            <div>
+                <h1>Alertas: {{ cultivo.nombre }}</h1>
+                <p class="subtitle">Registro de anomalías en los sensores y solicitudes de riego.</p>
+            </div>
+        </header>
+
+        {% if alertas %}
+        <div id="vista-tabla" class="table-container-historico">
+            <table class="tabla-historico">
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Sensor / Módulo</th>
+                        <th>Mensaje de Alerta</th>
+                        <th>Estado de Riego</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alerta in alertas %}
+                    <tr>
+                        <td class="date-cell">{{ alerta.momento_alerta.strftime('%d/%m/%Y %H:%M:%S') if alerta.momento_alerta else '--' }}</td>
+                        
+                        <td style="text-transform: capitalize; font-weight: 600; color: #064e3b;">
+                            {{ alerta.tipo_alerta | replace('_', ' ') if alerta.tipo_alerta else '--' }}
+                        </td>
+                        
+                        <td>{{ alerta.mensaje }}</td>
+                        
+                        <td>
+                            {% if alerta.agua == 1 %}
+                                <span class="status-badge alert-pending">Riego Pendiente ⏳</span>
+                            {% else %}
+                                <span class="status-badge alert-ok">✓ Procesado / OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state-historico">
+            <div class="empty-icon">🌱</div>
+            <h3>¡Tu cultivo está perfecto!</h3>
+            <p>No se han registrado alertas ni anomalías en los sensores de este cultivo.</p>
+        </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>

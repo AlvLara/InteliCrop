@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico - {{ cultivo.nombre }}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/historico.css') }}">
+</head>
+<body class="dashboard-page">
+
+    <nav class="dashboard-navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+            <div>
+                <h2>Huerto Inteligente</h2>
+                <span>Historial de lecturas</span>
+            </div>
+        </div>
+        <div class="user-controls">
+            <a href="{{ url_for('cultivo', uuid_cultivo=cultivo.uuid_cultivo) }}" class="btn-outline-small">⬅ Volver al Panel</a>
+        </div>
+    </nav>
+
+    <main class="dashboard-container historico-container">
+        <header class="cultivo-header">
+            <div>
+                <h1>Histórico: {{ cultivo.nombre }}</h1>
+                <p class="subtitle">Histórico agrupado por horas para un control preciso.</p>
+                
+                {% if historial %}
+                <button id="btn-cambiar-vista" type="button">
+                    Ver como Gráfica
+                </button>
+                {% endif %}
+            </div>
+        </header>
+
+        {% if historial %}
+        <div id="vista-tabla" class="table-container-historico">
+            <table class="tabla-historico">
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Temperatura</th>
+                        <th>Humedad (Aire)</th>
+                        <th>Humedad (Suelo)</th>
+                        <th>Lluvia</th>
+                        <th>¿Lloviendo?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in historial %}
+                    <tr>
+                        <td class="date-cell">{{ registro.created_at.strftime('%d/%m/%Y %H:%M:%S') if registro.created_at else '--' }}</td>
+                        <td><strong>{{ registro.data.temperatura }} °C</strong></td>
+                        <td>{{ registro.data.humedad }} %</td>
+                        <td>{{ registro.data.humedad_suelo }} %</td>
+                        <td>{{ registro.data.lluvia }}</td>
+                        <td>
+                            <span class="status-badge {{ 'raining' if registro.data.esta_lloviendo else 'sunny' }}">
+                                {{ 'Sí 🌧️' if registro.data.esta_lloviendo else 'No ☀️' }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="vista-grafica">
+            <canvas id="graficoHistorico"></canvas>
+        </div>
+        
+        {% else %}
+        <div class="empty-state-historico">
+            <div class="empty-icon">📊</div>
+            <h3>No hay datos registrados aún</h3>
+            <p>Asegúrate de que tu sensor esté encendido y enviando información a la base de datos.</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/historico.js') }}" defer></script>
+</body>
+</html>

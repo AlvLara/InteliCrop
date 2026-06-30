@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Cultivo</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cultivo.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body class="dashboard-page">
+
+    <nav class="dashboard-navbar">
+        <div class="navbar-left">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo">
+
+            <div>
+                <h2>Huerto Inteligente</h2>
+                <span>Mis cultivos</span>
+            </div>
+        </div>
+
+        <div class="user-controls">
+            <a href="{{ url_for('plantas') }}" class="btn-outline-small">
+                Volver a mis plantas
+            </a>
+        </div>
+    </nav>
+
+    <main class="cultivo-details-container">
+
+        <header class="cultivo-header">
+            <div class="header-title-group" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <h1 id="nombre-cultivo-display" style="margin: 0;">{{ cultivo.nombre | default('Mi Cultivo') }}</h1>
+                <button type="button" id="btn-editar-nombre" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; padding: 0; transition: transform 0.2s;" title="Editar nombre" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    ✏️
+                </button>
+            </div>
+
+            <form action="{{ url_for('editar_nombre_cultivo', uuid_cultivo=cultivo.uuid_cultivo) }}" 
+                  method="POST" 
+                  id="form-editar-nombre" 
+                  style="display: none; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 15px;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="nuevo_nombre" value="{{ cultivo.nombre }}" required style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                <button type="submit" class="btn-subheader btn-primary" style="padding: 5px 10px;">Guardar</button>
+                <button type="button" id="btn-cancelar-edicion" class="btn-subheader btn-secondary" style="padding: 5px 10px;">Cancelar</button>
+            </form>
+
+            <div class="cultivo-subheader" style="margin-top: 15px;">
+                <div class="subheader-actions">
+
+                    <a href="{{ url_for('cultivo_historico', uuid_cultivo=cultivo.uuid_cultivo) }}"
+                       class="btn-subheader btn-secondary">
+                        Ver Histórico
+                    </a>
+
+                    <a href="{{ url_for('cultivo_umbrales', uuid_cultivo=cultivo.uuid_cultivo) }}"
+                       class="btn-subheader btn-secondary">
+                        Ver Umbrales
+                    </a>
+
+                    <a href="{{ url_for('cultivo_alertas', uuid_cultivo=cultivo.uuid_cultivo) }}"
+                       id="btn-alertas"
+                       class="btn-subheader btn-thirdary">
+                        Ver Alertas
+                    </a>
+
+                    <form action="{{ url_for('activar_bomba_manualmente', uuid_cultivo=cultivo.uuid_cultivo) }}"
+                          method="POST"
+                          class="form-bomba"
+                          id="form-bomba">
+
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <button type="submit"
+                                id="btn-bomba"
+                                class="btn-subheader btn-primary">
+                            Activar Bomba
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </header>
+
+        <section class="monitoring-panel">
+            <h2>Monitoreo en Tiempo Real</h2>
+
+            <div class="sensor-grid">
+
+                <div class="sensor-card">
+                    <div class="sensor-icon">🌡️</div>
+
+                    <div class="sensor-info">
+                        <h3>Temperatura</h3>
+                        <p id="temperatura" class="datos-sensor">-- °C</p>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-icon">💧</div>
+
+                    <div class="sensor-info">
+                        <h3>Humedad (Aire)</h3>
+                        <p id="humedad" class="datos-sensor">-- %</p>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-icon">🌱</div>
+
+                    <div class="sensor-info">
+                        <h3>Humedad (Suelo)</h3>
+                        <p id="humedad_suelo" class="datos-sensor">-- %</p>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-icon">🌧️</div>
+
+                    <div class="sensor-info">
+                        <h3>Nivel de Lluvia</h3>
+                        <p id="lluvia" class="datos-sensor">--</p>
+                    </div>
+                </div>
+
+                <div class="sensor-card">
+                    <div class="sensor-icon">☔</div>
+
+                    <div class="sensor-info">
+                        <h3>¿Está lloviendo?</h3>
+                        <p id="esta_lloviendo" class="datos-sensor">--</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="actualizacion-container">
+                Última actualización:
+                <strong id="ts" class="datos-sensor">--</strong>
+            </div>
+        </section>
+
+        <section class="digital-twin-panel">
+            <h2>Gemelo Digital del Cultivo</h2>
+
+            <div class="digital-twin" id="digital-twin">
+
+                <div class="twin-sky" id="twin-sky">
+                    <div class="twin-sun" id="twin-sun"></div>
+                    <div class="twin-cloud" id="twin-cloud"></div>
+
+                    <div class="twin-rain" id="twin-rain">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="twin-ground">
+
+                    <div class="twin-plant" id="twin-plant">
+                        <div class="leaf leaf-left leaf-top"></div>
+                        <div class="leaf leaf-right leaf-top"></div>
+                        <div class="leaf leaf-left leaf-middle"></div>
+                        <div class="leaf leaf-right leaf-middle"></div>
+                        <div class="plant-stem"></div>
+                    </div>
+
+                    <div class="twin-pot">
+                        <div class="twin-soil" id="twin-soil"></div>
+                        <div class="pot-body"></div>
+                    </div>
+
+                </div>
+
+                <div class="twin-info">
+                    <p id="estado-planta">Estado: esperando datos...</p>
+
+                    <div class="twin-badges">
+                        <span id="badge-temp">Temperatura: --</span>
+                        <span id="badge-suelo">Suelo: --</span>
+                        <span id="badge-lluvia">Lluvia: --</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <div id="cultivo-data"
+         class="hidden"
+         data-uuid="{{ cultivo.uuid_cultivo }}"
+         data-umbrales='{{ umbrales | tojson | safe }}'>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+
+</html>

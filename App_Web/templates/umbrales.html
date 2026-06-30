@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umbrales - Huerto Inteligente IoT</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+    <div class="register-card umbrales-card">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='posible_logo.jpg') }}" alt="Logo Huerto Inteligente">
+        </div>
+
+        <h2>Umbrales: {{ cultivo.nombre }}</h2>
+
+        {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('cultivo_umbrales', uuid_cultivo=cultivo.uuid_cultivo) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <h3 class="umbrales-title umbrales-title-temperatura">
+                    Temperatura (°C)
+                </h3>
+
+                <label for="temp_min">Temperatura Mínima</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="temp_min"
+                    name="temp_min"
+                    value="{{ umbrales.get('temperatura', {}).get('min', '') }}"
+                    required
+                    autocomplete="off"
+                >
+
+                <label for="temp_max">Temperatura Máxima</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="temp_max"
+                    name="temp_max"
+                    value="{{ umbrales.get('temperatura', {}).get('max', '') }}"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <hr class="umbrales-separator">
+
+            <div class="form-group">
+                <h3 class="umbrales-title umbrales-title-humedad">
+                    Humedad Ambiente (%)
+                </h3>
+
+                <label for="hum_min">Humedad Mínima</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="hum_min"
+                    name="hum_min"
+                    value="{{ umbrales.get('humedad', {}).get('min', '') }}"
+                    required
+                    autocomplete="off"
+                >
+
+                <label for="hum_max">Humedad Máxima</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="hum_max"
+                    name="hum_max"
+                    value="{{ umbrales.get('humedad', {}).get('max', '') }}"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <hr class="umbrales-separator">
+
+            <div class="form-group">
+                <h3 class="umbrales-title umbrales-title-suelo">
+                    Humedad del Suelo (%)
+                </h3>
+
+                <label for="hum_suelo_min">Humedad Suelo Mínima (Seco)</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="hum_suelo_min"
+                    name="hum_suelo_min"
+                    value="{{ umbrales.get('humedad_suelo', {}).get('min', '') }}"
+                    required
+                    autocomplete="off"
+                >
+
+                <label for="hum_suelo_max">Humedad Suelo Máxima (Encharcado)</label>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="hum_suelo_max"
+                    name="hum_suelo_max"
+                    value="{{ umbrales.get('humedad_suelo', {}).get('max', '') }}"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Guardar Configuración
+            </button>
+        </form>
+
+        <p class="footer-text">
+            <a href="{{ url_for('cultivo', uuid_cultivo=cultivo.uuid_cultivo) }}">
+                Volver al panel del cultivo
+            </a>
+        </p>
+    </div>
+
+</body>
+
+</html>
