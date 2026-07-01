@@ -6,18 +6,18 @@ Siga los pasos detallados a continuación para desplegar el entorno completo y p
 ### Paso 1: Instalación de Dependencias del Backend
 Abra una terminal, diríjase a la carpeta del backend e instale las librerías necesarias ejecutando:
 
-cd Back
+
 ```pip install -r requirements.txt``` 
 
 ### Paso 2: Despliegue de la Infraestructura General (Docker)
-Vuelva al directorio raíz del proyecto y levante los contenedores de la infraestructura. Docker se encargará automáticamente de descargar las imágenes de los registros oficiales y compilar las imágenes locales del proyecto:
+Vuelva al directorio root del proyecto y levante los contenedores de la infraestructura. Docker se encargará automáticamente de descargar las imágenes de los registros oficiales y compilar las imágenes locales del proyecto:
 
 ```docker compose up -d --build```
 
 ### Paso 3: Ejecución de la Plataforma Web
 Inicie el servidor web ejecutando el script principal. Una vez levantado, podrá acceder al entorno local interactivo:
 
-````python app.py```
+```python app.py```
 
 - Acceso Web: http://localhost:5000
 
@@ -26,7 +26,7 @@ Acceda a la plataforma web a través del puerto 5000 y regístrese como nuevo us
 
 Complete el formulario para añadir una nueva planta al sistema.
 
-Al guardar la planta, el sistema generará dos credenciales críticas. Copie y guarde a buen recaudo los siguientes valores:
+Al guardar la planta, el sistema generará dos credenciales críticas. Copie y guarde los siguientes valores:
 
 HMAC SECRET KEY
 
@@ -41,7 +41,7 @@ HMAC SECRET KEY
 
 API SECRET KEY
 
-Credenciales Wi-Fi: (Introduzca el SSID y Contraseña del usuario)
+Credenciales Wi-Fi: Introduzca el SSID y Contraseña del usuario
 
 Conecte su placa Arduino y cargue el script modificado. Una vez finalizado, la placa comenzará a enviar los payloads de datos de los sensores de forma automática.
 
@@ -68,4 +68,4 @@ Abra su navegador web e ingrese al editor visual: http://localhost:9390/editor.
 
 Localice y abra el script de Siddhi dentro de la interfaz del editor.
 
-Ejecute (Run) el script desde la interfaz visual. El sistema empezará a guardar alertas en caso de cumplirse los requerimientos del sistema.
+Ejecute el script desde la interfaz visual. El sistema empezará a guardar alertas en caso de cumplirse los requerimientos del sistema.
