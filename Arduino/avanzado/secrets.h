@@ -2,8 +2,8 @@
 #define SECRETS_H
 
 // WiFi
-#define WIFI_SSID_SECRET "MiFibra-7F93"
-#define WIFI_PASSWORD_SECRET "P47jt7NC"
+#define WIFI_SSID_SECRET "SSID"
+#define WIFI_PASSWORD_SECRET "PASSWORD"
 
 
 
